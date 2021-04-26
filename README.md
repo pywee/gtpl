@@ -3,7 +3,7 @@
 <br />
 #### 使用必读
 
-gtpl is a HTML template engine for golang.
+gtpl is a HTML template engine for golang
 
 gtpl 是一个 go 语言模板引擎，它能以极快的速度进行模板语法分析。相比 go 语言官方库 html/template，gtpl 的语法有着简练、灵活、易用的特点。
 
