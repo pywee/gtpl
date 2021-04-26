@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{:web_title}</title>
+</head>
+<body>
+    {:id}
+    {:winner.str}
+    {!list:data.users}
+        {!if id==(1*1+1-1-1)}
+            man: {:user_name}
+        {;elseif 1==21}
+            women: {:user_name}
+        {;else}
+            {!list:my_list}
+                {:phone_number}
+            {/list}
+        {/if}
+    {/list}
+</body>
+</html>
