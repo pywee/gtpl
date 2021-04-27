@@ -40,7 +40,6 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 	lsidx := bytes.LastIndex(tmp, []byte("{/"))
 	if lsidx == -1 {
 		return nil, types.Errn(1094)
-
 	}
 	m = append(m, bytes.TrimRight(tmp[:lsidx], ""))
 
@@ -92,7 +91,7 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 				return v[idx+1:], nil
 			}
 
-			result, err := ParseIfExt(ret)
+			result, err := parseIfExt(ret)
 			if err != nil {
 				return nil, err
 			}
@@ -136,7 +135,7 @@ func getIfExtenses(f []byte) ([]byte, error) {
 
 // ParseIfExt 解析表达式
 // 返回的结果为 bool 类字符串
-func ParseIfExt(src []byte) (string, error) {
+func parseIfExt(src []byte) (string, error) {
 	var (
 		s       scanner.Scanner
 		k       = 0     // 用于标记括号 () 的出现次数，当它等于0时表示已经找到最里层的括号
@@ -144,6 +143,7 @@ func ParseIfExt(src []byte) (string, error) {
 		flot    = false // 是否存在浮点型计算
 		ext     = ""    // 完整的字符串表达式 在收集过程中不断从递归中计算得出结果
 		compare = ""    // 是否存在比较运算 如 "==" 符号 1 ==,  2 !=, 3 >, 4 <, 5 >=, 6 <=
+		comtype = 0     // 1-包含比较运算符 2-包含&&||
 		bracks  = make([]byte, 0, 10)
 		fset    = token.NewFileSet()
 		srcLen  = len(src)
@@ -166,7 +166,7 @@ func ParseIfExt(src []byte) (string, error) {
 		} else if tk == ")" {
 			k--
 			if k == 0 {
-				xt, err := ParseIfExt(bracks[1:])
+				xt, err := parseIfExt(bracks[1:])
 				if err != nil {
 					return "", err
 				}
@@ -178,6 +178,10 @@ func ParseIfExt(src []byte) (string, error) {
 		if !j && tk != ")" && tk != "(" {
 			switch tk {
 			case "==", "!=", ">", "<", ">=", "<=":
+				comtype = 1
+				compare = tk
+			case "&&", "||":
+				comtype = 2
 				compare = tk
 			case "FLOAT":
 				flot = true
@@ -199,8 +203,13 @@ func ParseIfExt(src []byte) (string, error) {
 		// fmt.Printf("%s\t%q\n", tok, lit)
 	}
 
+	// 逻辑运算 "&&" 和 "||"
+	if comtype == 2 {
+		fmt.Println(string(ext))
+	}
+
 	// 比较运算
-	if len(compare) > 0 {
+	if comtype == 1 {
 		rel, err := splitCompareSymbool(ext, compare)
 		if err != nil {
 			return "", err
@@ -230,7 +239,7 @@ func splitCompareSymbool(src, compare string) (bool, error) {
 
 	b0, b0s := checkStringType(arr0)
 	if b0 == 0 {
-		nb, err := ParseIfExt([]byte(arr0))
+		nb, err := parseIfExt([]byte(arr0))
 		if err != nil {
 			return false, err
 		}
@@ -239,7 +248,7 @@ func splitCompareSymbool(src, compare string) (bool, error) {
 
 	b1, b1s := checkStringType(arr1)
 	if b1 == 0 {
-		nb, err := ParseIfExt([]byte(arr1))
+		nb, err := parseIfExt([]byte(arr1))
 		if err != nil {
 			return false, err
 		}
@@ -279,7 +288,7 @@ func splitCompareSymbool(src, compare string) (bool, error) {
 
 // parseIf .
 func parseIf(tagName []byte, vv []*reflect.Value, values *reflect.Value) (bool, error) {
-	t, err := ParseIfExt(tagName)
+	t, err := parseIfExt(tagName)
 	if err != nil {
 		return false, err
 	}

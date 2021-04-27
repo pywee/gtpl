@@ -110,7 +110,7 @@ func case2CamelS(name string) string {
 	return strings.Replace(name, " ", "", -1)
 }
 
-func Camel2Case(name string) string {
+func camel2Case(name string) string {
 	str := ""
 	for i := 0; i < len(name); i++ {
 		k := name[i]

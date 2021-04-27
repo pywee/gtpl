@@ -9,7 +9,6 @@ import (
 	"github.com/pywee/gtpl/types"
 
 	"github.com/shopspring/decimal"
-	// "github.com/shopspring/decimal"
 )
 
 // checkStringType 取得字符串类型
