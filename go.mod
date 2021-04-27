@@ -1,4 +1,4 @@
-module gotpl
+module github.com/pywee/gotpl
 
 go 1.16
 
