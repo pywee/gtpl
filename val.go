@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pywee/gtpl/types"
+	"gtpl/types"
 )
 
 func parseGlobalStructVal(tagName string, values *reflect.Value) string {
