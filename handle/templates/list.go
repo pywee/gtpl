@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strings"
 
-	"gotpl/handle/parse"
-	"gotpl/types"
+	"gtpl/handle/parse"
+	"gtpl/types"
 )
 
 type Parser struct {

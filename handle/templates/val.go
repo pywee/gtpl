@@ -2,7 +2,7 @@ package templates
 
 import (
 	"fmt"
-	"gotpl/types"
+	"gtpl/types"
 	"reflect"
 	"strconv"
 	"strings"

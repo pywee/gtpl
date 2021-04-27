@@ -8,7 +8,7 @@ package main
 
 import (
 	"fmt"
-	"gotpl/handle/templates"
+	"gtpl/handle/templates"
 )
 
 // example struct

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"gotpl/types"
+	"gtpl/types"
 
 	"github.com/shopspring/decimal"
 	// "github.com/shopspring/decimal"

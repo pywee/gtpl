@@ -3,7 +3,7 @@ package templates
 import (
 	"crypto/md5"
 	"fmt"
-	"gotpl/types"
+	"gtpl/types"
 	"reflect"
 	"strconv"
 	"strings"

@@ -53,7 +53,7 @@ gtpl 目前已经可以使用简单的 if 条件表达式，如算术运算、�
 ```go
 
 import(
-    "github.com/pywee/gotpl/handle/templates"
+    "github.com/pywee/gtpl/handle/templates"
     "log"
     "net/http"
 )

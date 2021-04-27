@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"go/scanner"
 	"go/token"
-	"gotpl/types"
+	"gtpl/types"
 	"reflect"
 	"strings"
 	"unicode"
