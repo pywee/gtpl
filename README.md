@@ -1,7 +1,8 @@
 # gtpl
 
 <br />
-#### 使用必读
+
+##### 使用必读
 
 gtpl is a HTML template engine for golang
 
@@ -270,13 +271,7 @@ trimspace()
 {/list}
 ```
 
-，将来会支持更多的函数或自定义函数调用：
+将来会支持更多的函数或自定义函数调用：
 
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
 <br />
 <br />
