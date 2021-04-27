@@ -1,4 +1,4 @@
-module gtpl
+module github.com/pywee/gtpl
 
 go 1.16
 
