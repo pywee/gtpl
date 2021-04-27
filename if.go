@@ -10,7 +10,7 @@ import (
 	"strings"
 	"unicode"
 
-	"gtpl/types"
+	"github.com/pywee/gtpl/types"
 )
 
 const (

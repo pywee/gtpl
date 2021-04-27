@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strings"
 
-	"gtpl/types"
+	"github.com/pywee/gtpl/types"
 )
 
 type Parser struct {

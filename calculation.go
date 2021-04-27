@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"gtpl/types"
+	"github.com/pywee/gtpl/types"
 
 	"github.com/shopspring/decimal"
 	// "github.com/shopspring/decimal"

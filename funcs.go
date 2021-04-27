@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"gtpl/types"
+	"github.com/pywee/gtpl/types"
 )
 
 type fns struct {
