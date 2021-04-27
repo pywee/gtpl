@@ -1,4 +1,4 @@
-package templates
+package gtpl
 
 import (
 	"fmt"
@@ -12,8 +12,8 @@ func parseGlobalStructVal(tagName string, values *reflect.Value) string {
 	if arr := strings.Split(tagName, "."); len(arr) > 1 {
 		if values.Kind().String() != "slice" {
 			// fmt.Println(values.Elem().Type().Name())
-			// if structName := values.Elem().Type().Name(); structName == case2Camel(arr[0]) {
-			rv := values.Elem().FieldByName(case2Camel(arr[1]))
+			// if structName := values.Elem().Type().Name(); structName == case2CamelS(arr[0]) {
+			rv := values.Elem().FieldByName(case2CamelS(arr[1]))
 			vk := rv.Kind().String()
 			if vk == "int64" {
 				return fmt.Sprintf("%d", rv.Int())
@@ -51,8 +51,8 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 	// if arr := strings.Split(tagName, "."); len(arr) > 1 {
 	// 	for i := vlen - 1; i >= 0; i-- {
 	// 		if vs := vars[i]; vs.Kind().String() != "slice" {
-	// 			if structName := vs.Elem().Type().Name(); structName == case2Camel(arr[0]) {
-	// 				rv := vs.Elem().FieldByName(case2Camel(arr[1]))
+	// 			if structName := vs.Elem().Type().Name(); structName == case2CamelS(arr[0]) {
+	// 				rv := vs.Elem().FieldByName(case2CamelS(arr[1]))
 	// 				vk := rv.Kind().String()
 	// 				if vk == "int64" {
 	// 					return fmt.Sprintf("%d", rv.Int())
@@ -72,7 +72,7 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 		if arr := strings.Split(tagName, "."); len(arr) > 1 {
 			tmp := *(thisv)
 			for j := 0; j < len(arr); j++ {
-				if tv := tmp.Elem().FieldByName(case2Camel(arr[j])); tv.IsValid() {
+				if tv := tmp.Elem().FieldByName(case2CamelS(arr[j])); tv.IsValid() {
 					tmp = tv
 					tkind := tmp.Kind().String()
 					if tkind == "string" {
@@ -91,7 +91,7 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 		return types.Err(1090, tagName)
 	}
 
-	fieldName := case2Camel(tagName)
+	fieldName := case2CamelS(tagName)
 	if m := thisv.Elem().FieldByName(fieldName); m.IsValid() {
 		if vk := m.Kind().String(); IsKindInt(vk) {
 			return strconv.FormatInt(m.Int(), 10)
@@ -101,8 +101,8 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 	return types.Err(1097, tagName)
 }
 
-// case2Camel .
-func case2Camel(name string) string {
+// case2CamelS .
+func case2CamelS(name string) string {
 	name = strings.Replace(name, "_", " ", -1)
 	name = strings.Title(name)
 	return strings.Replace(name, " ", "", -1)

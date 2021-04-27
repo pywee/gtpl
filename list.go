@@ -1,4 +1,4 @@
-package templates
+package gtpl
 
 import (
 	"bytes"
@@ -9,7 +9,6 @@ import (
 	"reflect"
 	"strings"
 
-	"gtpl/handle/parse"
 	"gtpl/types"
 )
 
@@ -165,7 +164,7 @@ func parseTags(src []byte, vars []*reflect.Value, v1 *reflect.Value) ([]byte, er
 	// 处理 if 语句块
 	// 包含了 if,elseif,else 三类归为一整块
 	if tinfo.name == "if" {
-		rel, err := parse.SplitIfExt(src, ts, te, vars, v1)
+		rel, err := SplitIfExt(src, ts, te, vars, v1)
 		if err != nil {
 			return nil, err
 		}
@@ -210,22 +209,22 @@ func parseReflectSlice(vars []*reflect.Value, fieldName string, theRestStr []byt
 	}
 
 	if idx := strings.Index(structName, "."); idx != -1 {
-		if rs := structName[idx+1:]; case2Camel(fieldName) != rs {
+		if rs := structName[idx+1:]; case2CamelS(fieldName) != rs {
 			arr := strings.Split(fieldName, ".")
 			alen := len(arr)
 			if alen > 2 {
 				return nil, types.Errn(1092)
 			}
 
-			// if alen <= 1 || case2Camel(arr[0]) != rs {
+			// if alen <= 1 || case2CamelS(arr[0]) != rs {
 			// 	return nil, errors.New("找不到要输出的数据：" + fieldName)
 			// }
 
-			if alen > 1 && case2Camel(arr[0]) == rs {
+			if alen > 1 && case2CamelS(arr[0]) == rs {
 				if vs.Kind().String() == "slice" {
 					return nil, types.Errn(1091, structName)
 				}
-				field := vs.Elem().FieldByName(case2Camel(arr[1]))
+				field := vs.Elem().FieldByName(case2CamelS(arr[1]))
 				vs = &field
 			}
 		}
@@ -246,7 +245,7 @@ func parseReflectSlice(vars []*reflect.Value, fieldName string, theRestStr []byt
 
 	// ptr
 	// 解析结构体内的数组字段
-	field := vs.Elem().FieldByName(case2Camel(fieldName))
+	field := vs.Elem().FieldByName(case2CamelS(fieldName))
 	vars = append(vars, &field)
 	rel, err := parseReflectSlice(vars, fieldName, theRestStr)
 	if err != nil {

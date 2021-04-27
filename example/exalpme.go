@@ -8,7 +8,7 @@ package main
 
 import (
 	"fmt"
-	"gtpl/handle/templates"
+	"gtpl"
 )
 
 // example struct
@@ -89,7 +89,7 @@ func main() {
 	// example 1
 
 	// 实例化gtpl (instantiation gtpl)
-	p := templates.NewParser()
+	p := gtpl.NewParser()
 
 	// 引入模板文件，将 data 数据匹配模板中的调用
 	re, err := p.ParseFile("example/index.html", data)
@@ -106,7 +106,7 @@ func main() {
 	// http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 
 	// 	// 实例化gtpl (instantiation gtpl)
-	// 	p := templates.NewParser()
+	// 	p := gtpl.NewParser()
 
 	// 	// 引入模板文件，将 data 数据匹配模板中的调用
 	// 	re, err := p.ParseFile("example/index.html", data)

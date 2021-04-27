@@ -1,4 +1,4 @@
-package templates
+package gtpl
 
 import (
 	"crypto/md5"
