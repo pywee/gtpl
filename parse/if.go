@@ -204,9 +204,9 @@ func parseIfExt(src []byte) (string, error) {
 	}
 
 	// 逻辑运算 "&&" 和 "||"
-	if comtype == 2 {
-		fmt.Println(string(ext))
-	}
+	// if comtype == 2 {
+	// 	fmt.Println(string(ext))
+	// }
 
 	// 比较运算
 	if comtype == 1 {

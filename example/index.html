@@ -7,8 +7,18 @@
     <title>{:id}-{:web_title}</title>
 </head>
 <body>
-    {!if ((1+1)+3==5) && (5-3*(10+2))==31}
-        .....
-    {/if}
+    {:id}
+    {:winner.str}
+    {!list:data.users}
+        {!if id==(1*1+1-1-1)}
+            man: {:user_name}
+        {;elseif 1==21}
+            women: {:user_name}
+        {;else}
+            {!list:my_list}
+                {:phone_number}
+            {/list}
+        {/if}
+    {/list}
 </body>
 </html>
