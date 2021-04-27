@@ -1,4 +1,4 @@
-package gtpl
+package template
 
 import (
 	"bytes"

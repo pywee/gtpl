@@ -1,4 +1,4 @@
-package gtpl
+package template
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/pywee/gtpl/parse"
 	"github.com/pywee/gtpl/types"
 )
 
@@ -164,7 +165,7 @@ func parseTags(src []byte, vars []*reflect.Value, v1 *reflect.Value) ([]byte, er
 	// 处理 if 语句块
 	// 包含了 if,elseif,else 三类归为一整块
 	if tinfo.name == "if" {
-		rel, err := SplitIfExt(src, ts, te, vars, v1)
+		rel, err := parse.SplitIfExt(src, ts, te, vars, v1)
 		if err != nil {
 			return nil, err
 		}

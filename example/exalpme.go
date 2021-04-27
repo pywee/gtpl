@@ -9,7 +9,7 @@ package main
 import (
 	"fmt"
 
-	"gtpl"
+	"github.com/pywee/gtpl/template"
 )
 
 // example struct
@@ -90,7 +90,7 @@ func main() {
 	// example 1
 
 	// 实例化gtpl (instantiation gtpl)
-	p := gtpl.NewParser()
+	p := template.NewParser()
 
 	// 引入模板文件，将 data 数据匹配模板中的调用
 	re, err := p.ParseFile("example/index.html", data)

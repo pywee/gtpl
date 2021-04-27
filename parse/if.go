@@ -1,4 +1,4 @@
-package gtpl
+package parse
 
 import (
 	"bytes"
