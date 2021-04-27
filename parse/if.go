@@ -279,15 +279,19 @@ func splitCompareSymbool(src, compare string) (bool, error) {
 
 // parseIf .
 func parseIf(tagName []byte, vv []*reflect.Value, values *reflect.Value) (bool, error) {
-	result := false
 	t, err := ParseIfExt(tagName)
-	// fmt.Println("result >>", t, err)
-	if t == "true" {
-		result = true
-	} else if t != "false" {
-		return false, types.Errn(1095)
+	if err != nil {
+		return false, err
 	}
-	return result, err
+
+	if t == "false" {
+		return false, nil
+	}
+
+	if t == "true" {
+		return true, nil
+	}
+	return false, types.Errn(1095)
 }
 
 // parseString 语法检查
