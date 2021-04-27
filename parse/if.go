@@ -10,15 +10,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/pywee/gtpl/funcs"
 	"github.com/pywee/gtpl/types"
-)
-
-const (
-	Int   = "int"
-	Int8  = "int8"
-	Int16 = "int16"
-	Int32 = "int32"
-	Int64 = "int64"
 )
 
 // SplitIfExt 分离 if, else, else if 代码块
@@ -83,8 +76,7 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 					}
 					fv := vs.Elem().FieldByName(string(case2Camel(lt)))
 					if fv.IsValid() {
-						ft := fv.Type().String()
-						if ft == Int || ft == Int8 || ft == Int16 || ft == Int32 || ft == Int64 {
+						if ft := fv.Type().String(); funcs.IsKindInt(ft) {
 							vv := fv.Int()
 							ret = bytes.Replace(ret, lt, []byte(fmt.Sprintf("%d", vv)), 1)
 						} else if ft == "string" {

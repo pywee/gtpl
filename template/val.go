@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/pywee/gtpl/funcs"
 	"github.com/pywee/gtpl/types"
 )
 
@@ -79,7 +80,7 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 					if tkind == "string" {
 						return tmp.String()
 					}
-					if IsKindInt(tkind) {
+					if funcs.IsKindInt(tkind) {
 						return fmt.Sprintf("%d", tmp.Int())
 					}
 				}
@@ -94,7 +95,7 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 
 	fieldName := case2CamelS(tagName)
 	if m := thisv.Elem().FieldByName(fieldName); m.IsValid() {
-		if vk := m.Kind().String(); IsKindInt(vk) {
+		if vk := m.Kind().String(); funcs.IsKindInt(vk) {
 			return strconv.FormatInt(m.Int(), 10)
 		}
 		return m.String()
@@ -120,8 +121,4 @@ func Camel2Case(name string) string {
 		}
 	}
 	return str
-}
-
-func IsKindInt(k string) bool {
-	return k == "int" || k == "int64" || k == "int32" || k == "int8" || k == "int16"
 }
