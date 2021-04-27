@@ -8,7 +8,8 @@ package main
 
 import (
 	"fmt"
-	"gtpl"
+
+	"github.com/pywee/gtpl"
 )
 
 // example struct

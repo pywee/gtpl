@@ -2,10 +2,11 @@ package gtpl
 
 import (
 	"fmt"
-	"gtpl/types"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/pywee/gtpl/types"
 )
 
 func parseGlobalStructVal(tagName string, values *reflect.Value) string {

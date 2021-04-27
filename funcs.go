@@ -3,10 +3,11 @@ package gtpl
 import (
 	"crypto/md5"
 	"fmt"
-	"gtpl/types"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/pywee/gtpl/types"
 )
 
 type fns struct {

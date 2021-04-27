@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"go/scanner"
 	"go/token"
-	"gtpl/types"
 	"reflect"
 	"strings"
 	"unicode"
+
+	"github.com/pywee/gtpl/types"
 )
 
 const (
