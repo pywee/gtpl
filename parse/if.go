@@ -175,13 +175,18 @@ func parseIfExt(src []byte) (string, error) {
 				j = false
 			}
 		}
+
 		if !j && tk != ")" && tk != "(" {
 			switch tk {
-			case "==", "!=", ">", "<", ">=", "<=":
-				comtype = 1
-				compare = tk
 			case "&&", "||":
-				comtype = 2
+				if comtype < 2 {
+					comtype = 2
+				}
+				compare = tk
+			case "==", "!=", ">", "<", ">=", "<=":
+				if comtype == 0 {
+					comtype = 1
+				}
 				compare = tk
 			case "FLOAT":
 				flot = true
@@ -192,6 +197,7 @@ func parseIfExt(src []byte) (string, error) {
 				ext += tk
 			}
 		}
+
 		if j {
 			if lit != "" {
 				bracks = append(bracks, []byte(lit)...)
@@ -204,9 +210,10 @@ func parseIfExt(src []byte) (string, error) {
 	}
 
 	// 逻辑运算 "&&" 和 "||"
-	// if comtype == 2 {
-	// 	fmt.Println(string(ext))
-	// }
+	if comtype == 2 {
+		// fmt.Println(compareSymOr(ext))
+		return compareSymOr(ext)
+	}
 
 	// 比较运算
 	if comtype == 1 {
@@ -232,6 +239,60 @@ func parseIfExt(src []byte) (string, error) {
 	return r, nil
 }
 
+// compareSymOr 逻辑运算 "||" 和 "&&"
+func compareSymOr(src string) (string, error) {
+	arr := strings.Split(src, "||")
+	for _, v := range arr {
+		if v == "false" {
+			continue
+		}
+		final := true // 记录最终判断
+		mr := strings.Split(v, "&&")
+		for _, n := range mr {
+			if n == "false" {
+				final = false
+				break
+			}
+			r, err := splitCompareSymbool(n, findEqualSymbool(n))
+			if err != nil {
+				return "false", err
+			}
+			if !r {
+				final = false
+				break
+			}
+		}
+		if final {
+			return "true", nil
+		}
+	}
+	return "false", nil
+}
+
+func findEqualSymbool(src string) string {
+	if strings.Contains(src, "==") {
+		return "=="
+	}
+	if strings.Contains(src, "!=") {
+		return "!="
+	}
+	if strings.Contains(src, ">=") {
+		return ">="
+	}
+	if strings.Contains(src, "<=") {
+		return "<="
+	}
+	if strings.Contains(src, ">") {
+		return ">"
+	}
+	if strings.Contains(src, "<") {
+		return "<"
+	}
+	return ""
+}
+
+// splitCompareSymbool 比较运算
+// == != >= <= > <
 func splitCompareSymbool(src, compare string) (bool, error) {
 	arr := strings.Split(src, compare)
 	arr0 := arr[0]
