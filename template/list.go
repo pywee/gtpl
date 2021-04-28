@@ -165,12 +165,11 @@ func parseTags(src []byte, vars []*reflect.Value, v1 *reflect.Value) ([]byte, er
 	// 处理 if 语句块
 	// 包含了 if,elseif,else 三类归为一整块
 	if tinfo.name == "if" {
+		// fmt.Println(v1.Elem().FieldByName("Id"))
 		rel, err := parse.SplitIfExt(src, ts, te, vars, v1)
 		if err != nil {
 			return nil, err
 		}
-
-		// fmt.Println(string(rel))
 
 		return Pe(rel, vars, v1)
 	}
@@ -178,13 +177,6 @@ func parseTags(src []byte, vars []*reflect.Value, v1 *reflect.Value) ([]byte, er
 	// 提取了最外层标签后剩下的局部数据
 	theRestStr := src[ts+1 : te]
 	strParsed := make([]byte, 0, 100)
-
-	// 查找结构体
-	// resStruct, err := parseReflectSlice(vars, theRestStr)
-	// if err == nil && len(resStruct) > 0 {
-	// 	return resStruct, nil
-	// }
-
 	resStruct, err := parseReflectSlice(vars, string(tinfo.model), theRestStr)
 	if err != nil {
 		return nil, err
@@ -216,11 +208,6 @@ func parseReflectSlice(vars []*reflect.Value, fieldName string, theRestStr []byt
 			if alen > 2 {
 				return nil, types.Errn(1092)
 			}
-
-			// if alen <= 1 || case2CamelS(arr[0]) != rs {
-			// 	return nil, errors.New("找不到要输出的数据：" + fieldName)
-			// }
-
 			if alen > 1 && case2CamelS(arr[0]) == rs {
 				if vs.Kind().String() == "slice" {
 					return nil, types.Errn(1091, structName)

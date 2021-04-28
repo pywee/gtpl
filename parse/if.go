@@ -17,6 +17,10 @@ import (
 // SplitIfExt 分离 if, else, else if 代码块
 // 并进行表达式解析、if 优先级判断等
 // 返回最终结果的最终结果必须是一块局部代码块
+
+// todo 尚未完成对字符串的比较操作
+// 如果使用字符串比较 将引发未知错误
+
 func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) ([]byte, error) {
 	k := 0
 	slen := len(src)
@@ -36,13 +40,14 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 		tmp = append(tmp, src[i])
 	}
 
-	// 闭合处
+	// 标签闭合处
+	// todo 未做闭合标签对称性判断
 	lsidx := bytes.LastIndex(tmp, []byte("{/"))
 	if lsidx == -1 {
 		return nil, types.Errn(1094)
 	}
-	m = append(m, bytes.TrimRight(tmp[:lsidx], ""))
 
+	m = append(m, bytes.TrimRight(tmp[:lsidx], ""))
 	for _, v := range m {
 		if idx := bytes.Index(v, []byte("}")); idx != -1 {
 			ret, err := getIfExtenses(v[:idx])
@@ -64,29 +69,58 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 				lts = append(lts, letter)
 			}
 
-			// 替换变量为实际的值
-			for _, lt := range lts {
-				for _, vs := range vars {
-					if vs == nil || !vs.IsValid() {
-						continue
-					}
-					if vs.Kind().String() == "slice" {
-						vs = v1
-					}
-					fv := vs.Elem().FieldByName(string(case2Camel(lt)))
-					if fv.IsValid() {
-						if ft := fv.Type().String(); funcs.IsKindInt(ft) {
-							vv := fv.Int()
-							ret = bytes.Replace(ret, lt, []byte(fmt.Sprintf("%d", vv)), 1)
-						} else if ft == "string" {
-							vv := fv.String()
-							ret = bytes.Replace(ret, lt, []byte(vv), 1)
-						}
-					}
-				}
+			// 如果结构体第一层是数组 而在模板调用的时候没有在循环中调用变量
+			// 而是直接访问或采用链式操作
+			// 则在此处拦截
+			if v1.Kind().String() == "slice" {
+				return nil, types.Errn(1090)
 			}
 
-			// else
+			for _, lt := range lts {
+				field := string(case2Camel(lt))
+				fieldVar := v1.Elem().FieldByName(field)
+				fv := []byte{}
+				if q := fieldVar.Type().String(); funcs.IsKindInt(q) {
+					fv = []byte(fmt.Sprintf("%d", fieldVar.Int()))
+				} else if funcs.IsKindFloat(q) {
+					// todo 浮点型后小数点判断
+					// 此处将有可能引发带有浮点型数据的表达式最终结果判断错误
+					fv = []byte(fmt.Sprintf("%.f", fieldVar.Float()))
+				} else if q == "string" {
+					fv = []byte(fieldVar.String())
+				}
+				ret = bytes.Replace(ret, lt, fv, -1)
+				// fmt.Println(string(ret), string(case2Camel(lt)), v1.Elem().FieldByName(field))
+			}
+
+			// 替换变量为实际的值
+			// for _, lt := range lts {
+			// 	for _, vs := range vars {
+			// 		if vs == nil || !vs.IsValid() {
+			// 			continue
+			// 		}
+			// 		if vs.Kind().String() == "slice" {
+			// 			vs = v1
+			// 		}
+			// 		fv := vs.Elem().FieldByName(string(case2Camel(lt)))
+			// 		fmt.Println(vs, string(ret), v1.Elem().FieldByName("Id"))
+			// 		if fv.IsValid() {
+			// 			// fmt.Println(string(ret), string(lt), fv)
+			// 			if ft := fv.Type().String(); funcs.IsKindInt(ft) {
+			// 				vv := fv.Int()
+			// 				ret = bytes.Replace(ret, lt, []byte(fmt.Sprintf("%d", vv)), -1)
+			// 			} else if funcs.IsKindFloat(ft) {
+			// 				vv := fv.Float()
+			// 				ret = bytes.Replace(ret, lt, []byte(fmt.Sprintf("%.f", vv)), -1)
+			// 			} else if ft == "string" {
+			// 				vv := fv.String()
+			// 				ret = bytes.Replace(ret, lt, []byte(vv), 1)
+			// 			}
+			// 		}
+			// 	}
+			// }
+
+			// else 逻辑处理
 			if ret == nil {
 				return v[idx+1:], nil
 			}
@@ -156,6 +190,7 @@ func parseIfExt(src []byte) (string, error) {
 		if tok == token.EOF {
 			break
 		}
+
 		tk := tok.String()
 		if tk == ";" {
 			continue
@@ -211,7 +246,6 @@ func parseIfExt(src []byte) (string, error) {
 
 	// 逻辑运算 "&&" 和 "||"
 	if comtype == 2 {
-		// fmt.Println(compareSymOr(ext))
 		return compareSymOr(ext)
 	}
 
@@ -353,11 +387,9 @@ func parseIf(tagName []byte, vv []*reflect.Value, values *reflect.Value) (bool, 
 	if err != nil {
 		return false, err
 	}
-
 	if t == "false" {
 		return false, nil
 	}
-
 	if t == "true" {
 		return true, nil
 	}

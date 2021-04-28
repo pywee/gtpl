@@ -2,6 +2,7 @@ package parse
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
@@ -112,7 +113,7 @@ func calculationInt(s string) (string, error) {
 	var us = make([]*di, 0, 4)
 	var u = &di{}
 	for _, v := range s {
-		if v == '+' || v == '-' || v == '*' || v == '/' {
+		if v == '+' || v == '-' || v == '*' || v == '/' || v == '%' {
 			u.c = v
 			us = append(us, u)
 			u = &di{}
@@ -136,6 +137,11 @@ func calculationInt(s string) (string, error) {
 				l, _ := strconv.Atoi(us[i-1].e)
 				t, _ := strconv.Atoi(us[i].e)
 				us[i].e = strconv.Itoa(l / t)
+				us[i-1].pass = true
+			} else if us[i-1].c == '%' {
+				l, _ := strconv.Atoi(us[i-1].e)
+				t, _ := strconv.Atoi(us[i].e)
+				us[i].e = strconv.Itoa(l % t)
 				us[i-1].pass = true
 			}
 		}
@@ -163,6 +169,8 @@ func calculationInt(s string) (string, error) {
 			num *= n
 		} else if l.c == '/' {
 			num /= n
+		} else if l.c == '%' {
+			num %= n
 		}
 		l = v
 	}
@@ -175,7 +183,7 @@ func calculationFloat(s string) (string, error) {
 	var us = make([]*di, 0, 5)
 	var u = &di{}
 	for _, v := range s {
-		if v == '+' || v == '-' || v == '*' || v == '/' {
+		if v == '+' || v == '-' || v == '*' || v == '/' || v == '%' {
 			u.c = v
 			us = append(us, u)
 			u = &di{}
@@ -203,6 +211,11 @@ func calculationFloat(s string) (string, error) {
 				l, _ := strconv.ParseFloat(us[i-1].e, 64)
 				t, _ := strconv.ParseFloat(us[i].e, 64)
 				us[i].e = strconv.FormatFloat(l/t, 'f', -1, 64)
+				us[i-1].pass = true
+			} else if us[i-1].c == '%' {
+				l, _ := strconv.ParseFloat(us[i-1].e, 64)
+				t, _ := strconv.ParseFloat(us[i].e, 64)
+				us[i].e = fmt.Sprintf("%d", int64(l)%int64(t))
 				us[i-1].pass = true
 			}
 		}
@@ -233,6 +246,8 @@ func calculationFloat(s string) (string, error) {
 			numf = numf.Mul(nf)
 		} else if l.c == '/' {
 			numf = numf.Div(nf)
+		} else if l.c == '%' {
+			numf = numf.Mod(nf)
 		}
 		l = v
 	}

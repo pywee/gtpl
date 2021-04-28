@@ -73,6 +73,9 @@ func parseVal(tagName string, vars []*reflect.Value, thisv *reflect.Value) strin
 	if thisv.IsValid() {
 		if arr := strings.Split(tagName, "."); len(arr) > 1 {
 			tmp := *(thisv)
+			if tmp.Kind().String() == "slice" {
+				return ""
+			}
 			for j := 0; j < len(arr); j++ {
 				if tv := tmp.Elem().FieldByName(case2CamelS(arr[j])); tv.IsValid() {
 					tmp = tv

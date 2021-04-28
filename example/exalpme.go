@@ -46,13 +46,13 @@ func main() {
 	// 组装要输出到 HTML 的数据
 	data := &Data{
 		Id:       1,
-		WebTitle: "I am a title",
+		WebTitle: "I am   a title",
 		Winner: &Demo{
 			Str: "pywee",
 		},
 		Users: []*User{
 			{
-				Id:       1,
+				Id:       7,
 				UserName: "Jim",
 				MyList: []*UserCustom{
 					{PhoneNumber: "11"},
@@ -60,7 +60,15 @@ func main() {
 				},
 			},
 			{
-				Id:       2,
+				Id:       8,
+				UserName: "Lucy",
+				MyList: []*UserCustom{
+					{PhoneNumber: "33"},
+					{PhoneNumber: "44"},
+				},
+			},
+			{
+				Id:       9,
 				UserName: "Lucy",
 				MyList: []*UserCustom{
 					{PhoneNumber: "33"},
@@ -78,9 +86,9 @@ func main() {
 	// 				Id:       2,
 	// 				UserName: "title",
 	// 				MyList: []*UserCustom{
-	// 					{A: "1"},
-	// 					{A: "2"},
-	// 					{A: "3"},
+	// 					{PhoneNumber: "1"},
+	// 					{PhoneNumber: "2"},
+	// 					{PhoneNumber: "3"},
 	// 				},
 	// 			},
 	// 		},
@@ -95,7 +103,8 @@ func main() {
 	// 引入模板文件，将 data 数据匹配模板中的调用
 	re, err := p.ParseFile("example/index.html", data)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
 	// print string

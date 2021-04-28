@@ -14,7 +14,7 @@ const (
 	IllegalCrossTheBorder     = "非法定义，标签解析越界"
 	StrCanNotBeCompared       = "字符串不可与其他类型进行比较"
 	ExtentionNotAllowToRange  = "非法操作: 不可以一次性循环三级数据"
-	ExtentionNotAllowForSlice = "无效的访问方式，如果最外层是数组，不可直接使用链式操作"
+	ExtentionNotAllowForSlice = "无效的访问方式，如果最外层是数组，不可直接访问"
 	ExtentionNotAllowToUse    = "错误的访问方式，结构体最外层已经是数组，不可直接使用链式操作:"
 )
 
