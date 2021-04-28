@@ -17,11 +17,14 @@ func parseGlobalStructVal(tagName string, values *reflect.Value) string {
 			// if structName := values.Elem().Type().Name(); structName == case2CamelS(arr[0]) {
 			rv := values.Elem().FieldByName(case2CamelS(arr[1]))
 			vk := rv.Kind().String()
-			if vk == "int64" {
+			if funcs.IsKindInt(vk) {
 				return fmt.Sprintf("%d", rv.Int())
 			}
 			if vk == "string" {
 				return rv.String()
+			}
+			if funcs.IsKindFloat(vk) {
+				return fmt.Sprintf("%f", rv.Float())
 			}
 			// fmt.Println(tagName, vk, rv.Elem().Type())
 			return parseGlobalStructVal(strings.Join(arr[1:], "."), &rv)
