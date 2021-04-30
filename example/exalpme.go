@@ -46,7 +46,7 @@ func main() {
 	// 组装要输出到 HTML 的数据
 	data := &Data{
 		Id:       1,
-		WebTitle: "I am   a title",
+		WebTitle: "I",
 		Winner: &Demo{
 			Str: "pywee",
 		},

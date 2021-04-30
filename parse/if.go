@@ -79,17 +79,19 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 			for _, lt := range lts {
 				field := string(case2Camel(lt))
 				fieldVar := v1.Elem().FieldByName(field)
-				fv := []byte{}
-				if q := fieldVar.Type().String(); funcs.IsKindInt(q) {
-					fv = []byte(fmt.Sprintf("%d", fieldVar.Int()))
-				} else if funcs.IsKindFloat(q) {
-					// todo 浮点型后小数点判断
-					// 此处将有可能引发带有浮点型数据的表达式最终结果判断错误
-					fv = []byte(fmt.Sprintf("%.f", fieldVar.Float()))
-				} else if q == "string" {
-					fv = []byte(fieldVar.String())
+				if fieldVar.IsValid() {
+					fv := []byte{}
+					if q := fieldVar.Type().String(); funcs.IsKindInt(q) {
+						fv = []byte(fmt.Sprintf("%d", fieldVar.Int()))
+					} else if funcs.IsKindFloat(q) {
+						// todo 浮点型后小数点判断
+						// 此处将有可能引发带有浮点型数据的表达式最终结果判断错误
+						fv = []byte(fmt.Sprintf("%.f", fieldVar.Float()))
+					} else if q == "string" {
+						fv = []byte(fieldVar.String())
+					}
+					ret = bytes.Replace(ret, lt, fv, -1)
 				}
-				ret = bytes.Replace(ret, lt, fv, -1)
 				// fmt.Println(string(ret), string(case2Camel(lt)), v1.Elem().FieldByName(field))
 			}
 
@@ -328,27 +330,44 @@ func findEqualSymbool(src string) string {
 // splitCompareSymbool 比较运算
 // == != >= <= > <
 func splitCompareSymbool(src, compare string) (bool, error) {
-	arr := strings.Split(src, compare)
-	arr0 := arr[0]
-	arr1 := arr[1]
+	var (
+		arr  = strings.Split(src, compare)
+		arr0 = arr[0]
+		arr1 = arr[1]
+		b0   int8
+		b0s  string
+	)
 
-	b0, b0s := checkStringType(arr0)
-	if b0 == 0 {
-		nb, err := parseIfExt([]byte(arr0))
-		if err != nil {
-			return false, err
+	if len(arr0) == 0 {
+		b0 = 3
+	} else {
+		if b0, b0s = checkStringType(arr0); b0 == 0 {
+			nb, err := parseIfExt([]byte(arr0))
+			if err != nil {
+				return false, err
+			}
+			b0, b0s = checkStringType(nb)
 		}
-		b0, b0s = checkStringType(nb)
 	}
 
-	b1, b1s := checkStringType(arr1)
-	if b1 == 0 {
-		nb, err := parseIfExt([]byte(arr1))
-		if err != nil {
-			return false, err
+	var (
+		b1  int8
+		b1s string
+	)
+	if len(arr1) == 0 {
+		b1 = 3
+	} else {
+		b1, b1s = checkStringType(arr1)
+		if b1 == 0 {
+			nb, err := parseIfExt([]byte(arr1))
+			if err != nil {
+				return false, err
+			}
+			b1, b1s = checkStringType(nb)
 		}
-		b1, b1s = checkStringType(nb)
 	}
+
+	// fmt.Println(b0, b0s, b1, b1s)
 
 	// 布尔值比较
 	if (b0 == 4 || b0 == 5) && (b1 == 4 || b1 == 5) {
@@ -358,22 +377,23 @@ func splitCompareSymbool(src, compare string) (bool, error) {
 		if compare == "!=" {
 			return b0s != b1s, nil
 		}
-		return false, types.Errn(1096)
+		return false, errors.New(types.InvalidCompareExts)
 	}
 
 	// 字符串比较 两者中如果只有一个是字符串
 	// 则不允许参与比较
-	if (b0 == 3 && b1 != 3) || (b1 == 3 && b0 != 3) {
-		return false, errors.New(types.StrCanNotBeCompared)
+	if (b0 == 3 && b1 != 3) || (b0 != 3 && b1 == 3) {
+		return false, types.Errn(1098)
 	}
 	if b0 == 3 {
 		if compare == "==" {
+			// fmt.Println(arr0, arr1, b0, b1, b0s, b1s)
 			return b0s == b1s, nil
 		}
 		if compare == "!=" {
 			return b0s != b1s, nil
 		}
-		return false, types.Errn(1096)
+		return false, errors.New(types.InvalidCompareExts)
 	}
 	if b0 == 2 || b1 == 2 {
 		return compareFloat(arr0, arr1, compare)

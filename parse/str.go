@@ -27,7 +27,7 @@ func checkAndGetString(src string) (string, bool, error) {
 
 	// 深入判断是否为字符串
 	for _, v := range src {
-		if v < 40 || v > 58 { // 没有将运算符 ^ 计算在内
+		if (v < 40 || v > 58) && v != 37 { // 没有将运算符 ^ 计算在内
 			return src, true, nil
 		}
 	}

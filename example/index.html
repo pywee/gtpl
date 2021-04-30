@@ -8,14 +8,12 @@
 </head>
 <body>
     {:winner.str}
-    {!if id==1}
+    {!if web_title=="I"}
     {:web_title}
     {/if}
     {!list:users}
-        {!if id%2==0}
+        {!if id%2==1}
             {:id}
-        {;else}
-        else {:replace(id, 7, "111")}
         {/if}
     {/list}
 </body>

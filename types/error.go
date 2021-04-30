@@ -38,6 +38,8 @@ func Err(code int16, msg ...string) string {
 		f = InvalidCompareExts
 	case 1097:
 		f = NotFoundValid
+	case 1098:
+		f = StrCanNotBeCompared
 	}
 
 	if len(msg) > 0 {
