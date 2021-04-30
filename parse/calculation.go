@@ -15,9 +15,11 @@ import (
 // checkStringType 取得字符串类型
 // 0-无法识别 1-整型 2-浮点型 3-字符串 4-布尔型(true) 5-布尔型(false)
 func checkStringType(src string) (int8, string) {
-	var (
-		l = len(src)
-	)
+	l := len(src)
+	if l == 0 {
+		return 0, ""
+	}
+
 	if l >= 4 {
 		sl := strings.ToLower(src)
 		if sl == "true" {
@@ -29,11 +31,9 @@ func checkStringType(src string) (int8, string) {
 	}
 
 	// 字符串判断
-	str, err := checkAndGetString(src)
-	if err != nil {
+	if str, f, err := checkAndGetString(src); err != nil {
 		return 0, err.Error()
-	}
-	if str != "" {
+	} else if f {
 		return 3, str
 	}
 
@@ -113,7 +113,7 @@ func calculationInt(s string) (string, error) {
 	var us = make([]*di, 0, 4)
 	var u = &di{}
 	for _, v := range s {
-		if v == '+' || v == '-' || v == '*' || v == '/' || v == '%' {
+		if isOperator(v) {
 			u.c = v
 			us = append(us, u)
 			u = &di{}
@@ -183,7 +183,7 @@ func calculationFloat(s string) (string, error) {
 	var us = make([]*di, 0, 5)
 	var u = &di{}
 	for _, v := range s {
-		if v == '+' || v == '-' || v == '*' || v == '/' || v == '%' {
+		if isOperator(v) {
 			u.c = v
 			us = append(us, u)
 			u = &di{}
@@ -327,4 +327,9 @@ func compareFloat(arr0, arr1, compare string) (bool, error) {
 		return i0 <= i1, nil
 	}
 	return false, errors.New("表达式不合法")
+}
+
+// isOperator 是否为数学运算符
+func isOperator(n rune) bool {
+	return n == '+' || n == '-' || n == '*' || n == '/' || n == '%'
 }
