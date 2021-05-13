@@ -14,14 +14,14 @@ import (
 	"github.com/pywee/gtpl/types"
 )
 
-// SplitIfExt 分离 if, else, else if 代码块
+// splitIfExt 分离 if, else, else if 代码块
 // 并进行表达式解析、if 优先级判断等
 // 返回最终结果的最终结果必须是一块局部代码块
 
 // todo 尚未完成对字符串的比较操作
 // 如果使用字符串比较 将引发未知错误
 
-func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) ([]byte, error) {
+func splitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) ([]byte, error) {
 	k := 0
 	slen := len(src)
 	tmp := make([]byte, 0, 40)
@@ -77,7 +77,7 @@ func SplitIfExt(src []byte, s, e int, vars []*reflect.Value, v1 *reflect.Value) 
 			}
 
 			for _, lt := range lts {
-				field := string(case2Camel(lt))
+				field := string(funcs.Case2Camel(lt))
 				fieldVar := v1.Elem().FieldByName(field)
 				if fieldVar.IsValid() {
 					fv := []byte{}
@@ -440,13 +440,6 @@ func parseString(s []byte) (string, bool) {
 		s = s[1 : len(s)-1]
 	}
 	return string(s), true
-}
-
-// case2Camel .
-func case2Camel(name []byte) []byte {
-	name = bytes.Replace(name, []byte("_"), []byte{32}, -1)
-	name = bytes.Title(name)
-	return bytes.Replace(name, []byte{32}, nil, -1)
 }
 
 // strings.NewReplacer(

@@ -1,4 +1,4 @@
-package template
+package parse
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/pywee/gtpl/parse"
+	"github.com/pywee/gtpl/funcs"
 	"github.com/pywee/gtpl/types"
 )
 
@@ -165,8 +165,7 @@ func parseTags(src []byte, vars []*reflect.Value, v1 *reflect.Value) ([]byte, er
 	// 处理 if 语句块
 	// 包含了 if,elseif,else 三类归为一整块
 	if tinfo.name == "if" {
-		// fmt.Println(v1.Elem().FieldByName("Id"))
-		rel, err := parse.SplitIfExt(src, ts, te, vars, v1)
+		rel, err := splitIfExt(src, ts, te, vars, v1)
 		if err != nil {
 			return nil, err
 		}
@@ -177,6 +176,26 @@ func parseTags(src []byte, vars []*reflect.Value, v1 *reflect.Value) ([]byte, er
 	// 提取了最外层标签后剩下的局部数据
 	theRestStr := src[ts+1 : te]
 	strParsed := make([]byte, 0, 100)
+
+	// 针对 list 标签链式操作，如 list.winner
+	kk := *v1
+	for _, mw := range strings.Split(string(tinfo.model), ".") {
+		if kk.Kind().String() == "ptr" {
+			fields := kk.Elem().NumField()
+			for j := 0; j < fields; j++ {
+				inner := kk.Elem().Type().Field(j)
+				if funcs.Case2CamelS(mw) == inner.Name {
+					v2 := kk.Elem().FieldByName(inner.Name)
+					kk = v2
+					// fmt.Println(funcs.Case2CamelS(mw), kk, v2)
+				}
+			}
+		}
+	}
+
+	// fmt.Println(kk.Kind(), kk.Index(0))
+	// fmt.Println(string(tinfo.model), v1, string(theRestStr))
+	vars = append(vars, &kk)
 	resStruct, err := parseReflectSlice(vars, string(tinfo.model), theRestStr)
 	if err != nil {
 		return nil, err

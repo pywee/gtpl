@@ -1,20 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{:id}-{:web_title}</title>
-</head>
-<body>
-    {:winner.str}
-    {!if web_title=="I"}
-    {:web_title}
-    {/if}
-    {!list:users}
-        {!if id%2==1}
-            {:id}
-        {/if}
+{!list:data}
+    {!list:winner.list}
+        {:id}
     {/list}
-</body>
-</html>
+{/list}
